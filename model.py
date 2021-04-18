@@ -34,7 +34,7 @@ def create_model():
     model = Sequential()
 
     model.add(Convolution2D(filters = 32, kernel_size = (5,5),padding = 'Same',
-                    activation ='relu', input_shape = (28,28,1)))
+                    activation ='relu', input_shape = (128,130,1)))
     model.add(Convolution2D(filters = 32, kernel_size = (5,5),padding = 'Same',
                     activation ='relu'))
     model.add(MaxPooling2D(pool_size=(2,2)))
@@ -75,12 +75,12 @@ for each in range(len(paths)):
     model.compile(optimizer = optimizer , loss='binary_crossentropy', metrics=['accuracy'])
 
     earlyStopping = EarlyStopping(monitor='val_acc', patience=30, verbose=0, mode='max')
-    mcp_save = ModelCheckpoint('test_fold_model' + str(each).hdf5', save_best_only=True, monitor='val_acc', mode='max')
+    mcp_save = ModelCheckpoint('test_fold_model' + str(each)+'.hdf5', save_best_only=True, monitor='val_acc', mode='max')
     reduce_lr_loss = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=3, verbose=1, min_lr=0.00001)
 
 
     batch_size =128
-    epochs = 1
+    epochs = 100
     
 
     for epoch in range(epochs):
