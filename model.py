@@ -33,7 +33,7 @@ def create_batch(directories, test=False):
             else:
                 y_data.append(0)
     
-    return x_data, y_data
+    return np.array(x_data), np.array(y_data)
 
 
 
@@ -75,7 +75,7 @@ paths = ['./data/fold0/', './data/fold1/', './data/fold2/','./data/fold3/']
 
 for each in range(len(paths)):
     test_path = [paths[each]]
-    train_path = [path for path in paths if path != test_path]
+    train_path = [path for path in paths if path != test_path[0]]
 
     x_test, y_test = create_batch(test_path, test=True)
 
