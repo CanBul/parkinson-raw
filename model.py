@@ -101,4 +101,4 @@ for each in range(len(paths)):
         if history.history['val_accuracy'][0] > accuracy_report[testName]:            
             accuracy_report[testName] = history.history['val_accuracy'][0]
 
-        
+print(accuracy_report)    
