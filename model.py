@@ -60,6 +60,8 @@ def create_model():
 
 paths = ['./data/fold0/', './data/fold1/', './data/fold2/','./data/fold3/']
 
+accuracy_report = {}
+
 for each in range(len(paths)):
     test_path = [paths[each]]
     train_path = [path for path in paths if path != test_path[0]]
@@ -79,8 +81,11 @@ for each in range(len(paths)):
     reduce_lr_loss = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=3, verbose=1, min_lr=0.00001)
 
 
-    batch_size =128
-    epochs = 100
+    batch_size =32
+    epochs = 60
+
+    testName = test_path[0][-6:-1]
+    accuracy_report[testName] = 0
     
 
     for epoch in range(epochs):
@@ -92,3 +97,8 @@ for each in range(len(paths)):
         history = model.fit(x_train,y_train, batch_size=batch_size, verbose=2,
                                 epochs = 1, validation_data = (x_test,y_test))#, steps_per_epoch=x_train.shape[0] // batch_size, callbacks=[earlyStopping, mcp_save, reduce_lr_loss])
 
+
+        if history.history['val_accuracy'][0] > accuracy_report[testName]:            
+            accuracy_report[testName] = history.history['val_accuracy'][0]
+
+        
