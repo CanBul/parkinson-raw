@@ -69,23 +69,24 @@ for each in range(len(paths)):
     x_test, y_test = create_batch(test_path, test=True)
     x_test = x_test.reshape(-1,128,130,1)
 
-    
+    testName = test_path[0][-6:-1]
 
     model = create_model()
 
     optimizer = RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0)
     model.compile(optimizer = optimizer , loss='binary_crossentropy', metrics=['accuracy'])
 
-    earlyStopping = EarlyStopping(monitor='val_acc', patience=30, verbose=0, mode='max')
-    mcp_save = ModelCheckpoint('test_fold_model' + str(each)+'.hdf5', save_best_only=True, monitor='val_acc', mode='max')
-    reduce_lr_loss = ReduceLROnPlateau(monitor='val_acc', factor=0.5, patience=3, verbose=1, min_lr=0.00001)
+    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=30, verbose=0, mode='max')
+    mcp_save = ModelCheckpoint('./checkpoints/model_tested_on_' + str(testName)+'.hdf5', save_best_only=True, monitor='val_accuracy', mode='max')
+    reduce_lr_loss = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=3, verbose=1, min_lr=0.00001)
 
 
     batch_size =32
     epochs = 60
 
-    testName = test_path[0][-6:-1]
+    
     accuracy_report[testName] = 0
+    print('Training has started...')
     
 
     for epoch in range(epochs):
@@ -93,12 +94,14 @@ for each in range(len(paths)):
         x_train = x_train.reshape(-1,128,130,1)
 
         
-        print('Training has started...')
+        
         history = model.fit(x_train,y_train, batch_size=batch_size, verbose=2,
-                                epochs = 1, validation_data = (x_test,y_test))#, steps_per_epoch=x_train.shape[0] // batch_size, callbacks=[earlyStopping, mcp_save, reduce_lr_loss])
+                                epochs = 1, validation_data = (x_test,y_test), steps_per_epoch=x_train.shape[0] // batch_size, callbacks=[earlyStopping, mcp_save, reduce_lr_loss])
 
 
         if history.history['val_accuracy'][0] > accuracy_report[testName]:            
             accuracy_report[testName] = history.history['val_accuracy'][0]
 
-print(accuracy_report)    
+
+with open('results.txt', 'w+') as f:
+    f.write(str(accuracy_report))
